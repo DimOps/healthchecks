@@ -1,0 +1,24 @@
+{
+"check": [
+	{
+	"name":"sap",
+	"host":"www.sap.com",
+	"type":"http"
+	},
+	{
+	"name":"facebook",
+	"host":"www.facebook.com",
+	"type":"http"		
+	},
+	{
+	"name":"softuni",
+	"host":"www.emag.bg",
+	"type":"http"		
+	},
+	{
+	"name":"google",
+	"host":"www.google.com",
+	"type":"http"		
+	}
+	]
+}

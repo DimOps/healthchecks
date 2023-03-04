@@ -23,19 +23,3 @@ class Check(Base):
 
 
 Base.metadata.create_all(engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
-session.add_all(
-    [
-        Check(name="sap", host="www.sap.com", type="http"),
-        Check(name="amazon", host="www.aws.com", type="http"),
-    ]
-)
-
-session.commit()
-
-for name, host in session.query(Check.name, Check.host):
-    print(name, host)
-
-session.close()
