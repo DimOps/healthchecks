@@ -23,7 +23,7 @@ class Status(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     ping_id: Mapped[int] = mapped_column(nullable=False)
-    status: Mapped[str] = mapped_column(nullable=False)
+    status: Mapped[str] = mapped_column(nullable=False, default="unknown")
     last_down_start: Mapped[int] = mapped_column(nullable=True)
     last_down_end: Mapped[int] = mapped_column(nullable=True)
     check_id = mapped_column(ForeignKey("checks.id"))
