@@ -25,3 +25,13 @@ class ChecksCrudApi:
     def delete_check(self, check_id):
         r = requests.delete(f'https://api.pingdom.com/api/3.1/checks/{check_id}', headers=self.auth)
         return r.json()
+
+    def delete_many_checks(self, list_ids):
+        s = str(list_ids)
+        string_list = s[1:len(s) - 1]
+        data = {
+            "delcheckids": f"{string_list}"
+        }
+
+        r = requests.delete('https://api.pingdom.com/api/3.1/checks', headers=self.auth, json=data)
+        return r.json()
