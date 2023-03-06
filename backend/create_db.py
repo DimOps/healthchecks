@@ -9,22 +9,23 @@ Base = declarative_base()
 class Check(Base):
     __tablename__ = "checks"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column()
-    host: Mapped[str] = mapped_column()
-    type: Mapped[str] = mapped_column()
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(unique=True, nullable=False)
+    host: Mapped[str] = mapped_column(nullable=False)
+    type: Mapped[str] = mapped_column(nullable=False)
 
-    current_state: Mapped[List["Status"]] = relationship(back_populates="checking")
+    current_state: Mapped[List["Status"]] = relationship(back_populates="checking",
+                                                         cascade='all, delete-orphan')
 
 
 class Status(Base):
     __tablename__ = "status"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    ping_id: Mapped[int] = mapped_column()
-    status: Mapped[str] = mapped_column()
-    last_down_start: Mapped[int] = mapped_column()
-    last_down_end: Mapped[int] = mapped_column()
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    ping_id: Mapped[int] = mapped_column(nullable=False)
+    status: Mapped[str] = mapped_column(nullable=False)
+    last_down_start: Mapped[int] = mapped_column(nullable=True)
+    last_down_end: Mapped[int] = mapped_column(nullable=True)
     check_id = mapped_column(ForeignKey("checks.id"))
 
     checking: Mapped["Check"] = relationship(back_populates="current_state")
