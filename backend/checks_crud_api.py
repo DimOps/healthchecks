@@ -21,3 +21,7 @@ class ChecksCrudApi:
     def create_check(self, data):
         r = requests.post(f'https://api.pingdom.com/api/3.1/checks', headers=self.auth, json=data)
         return r.json()
+
+    def delete_check(self, check_id):
+        r = requests.delete(f'https://api.pingdom.com/api/3.1/checks/{check_id}', headers=self.auth)
+        return r.json()
