@@ -1,6 +1,5 @@
 from extractor import db_extractor
 from create_checks import create_checks
-from utils import create_ui_obj
 from checks_crud_api import ChecksCrudApi
 
 
@@ -37,16 +36,16 @@ def sync_db():
     Pingdom statistics in the database
     """
     # Always execute sync_ping() before as
-    # it will duplicate old records
+    # it will duplicate old records(? break was bug, check)
     checks_list = db_extractor('Check')
     status_list = db_extractor('Status')
-    db_data = {"checks": []}
+
     for check in checks_list:
         for stat in status_list:
             if check.id == stat.check_id:
-                obj = create_ui_obj(check, stat)
-                db_data['checks'].append(obj)
-            break
+
+                status_list.remove(stat)
+                break
         ch = {
             "check_id": check.id,
             "obj":
@@ -56,11 +55,4 @@ def sync_db():
                     "type": f"{check.type}"
                 }
         }
-        ping_res = create_checks(**ch)
-        obj = create_ui_obj(check, ping_res)
-        db_data['checks'].append(obj)
-
-    return db_data
-
-
-r = sync_ping()
+        create_checks(**ch)

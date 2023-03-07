@@ -1,7 +1,7 @@
 import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from create_db import Check
+from create_db_models import Check
 
 with open("healthchecks.json", "r") as read_file:
     data = json.load(read_file)
@@ -12,7 +12,9 @@ engine = create_engine("sqlite:///healthchecks.db", echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 db_data = session.query(Check).all()
-
+# check if someone change the name but not the host and type and just state it
+# raise error if someone is trying to replicate name
+# raise error if someone is trying to pass one check twice or more
 deletions = []
 for db_instance in db_data:
     eq = False
