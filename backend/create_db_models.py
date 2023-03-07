@@ -15,7 +15,7 @@ class Check(Base):
     type: Mapped[str] = mapped_column(nullable=False)
 
     current_state: Mapped[List["Status"]] = relationship(back_populates="checking",
-                                                         cascade='all, delete-orphan')
+                                                         cascade='all,delete,delete-orphan')
 
 
 class Status(Base):

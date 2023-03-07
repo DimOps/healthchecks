@@ -33,15 +33,15 @@ def create_checks(**kwargs):
     if not kwargs:
         data = _to_create_checks()
     else:
-        res = ChecksCrudApi.create_check(kwargs['obj'])
+        res = ChecksCrudApi().create_check(kwargs['obj'])
         session.add(Status(ping_id=res['check']['id'], check_id=kwargs['check_id']))
         session.commit()
-        stat_record = session.query(Status).get(res['check']['id'])
+        stat_record = session.query(Status).filter(Status.ping_id == res['check']['id']).first()
         return stat_record
 
     for obj in data:
         to_create = obj['obj']
-        res = ChecksCrudApi.create_check(to_create)
+        res = ChecksCrudApi().create_check(to_create)
         # include try-catch
         check_id = int(obj['id'])
         ping_id = int(res['check']['id'])

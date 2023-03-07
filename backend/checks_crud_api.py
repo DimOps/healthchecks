@@ -35,6 +35,6 @@ class ChecksCrudApi:
         data = {
                 "delcheckids": f"{s}"
                 }
-        
+
         r = requests.delete(f'{self.url}/checks', headers=self.auth, json=data)
         return r.json()
