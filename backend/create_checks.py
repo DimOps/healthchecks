@@ -9,14 +9,14 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def to_create_checks():
-    checks = session.query(Check).all()
-    current_checks = session.query(Status).all()
+def _to_create_checks():
+    checks_list = session.query(Check).all()
+    added_checks = session.query(Status).all()
 
-    for c_check in current_checks:
-        for check in checks:
+    for c_check in added_checks:
+        for check in checks_list:
             if c_check.check_id == check.id:
-                checks.remove(check)
+                checks_list.remove(check)
                 break
 
     return [{
@@ -26,11 +26,18 @@ def to_create_checks():
             "host": f"{c.host}",
             "type": f"{c.type}"}
              }
-            for c in checks]
+            for c in checks_list]
 
 
-def create_checks():
-    data = to_create_checks()
+def create_checks(**kwargs):
+    if not kwargs:
+        data = _to_create_checks()
+    else:
+        res = ChecksCrudApi.create_check(kwargs['obj'])
+        session.add(Status(ping_id=res['check']['id'], check_id=kwargs['check_id']))
+        session.commit()
+        stat_record = session.query(Status).get(res['check']['id'])
+        return stat_record
 
     for obj in data:
         to_create = obj['obj']
