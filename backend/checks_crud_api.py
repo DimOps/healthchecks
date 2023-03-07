@@ -31,11 +31,10 @@ class ChecksCrudApi:
         return r.json()
 
     def delete_many_checks(self, list_ids):
-        s = str(list_ids)
-        string_list = s[1:len(s) - 1]
+        s = ','.join([str(i) for i in list_ids])
         data = {
-            "delcheckids": f"{string_list}"
-        }
-
+                "delcheckids": f"{s}"
+                }
+        
         r = requests.delete(f'{self.url}/checks', headers=self.auth, json=data)
         return r.json()
