@@ -4,7 +4,11 @@ from checks_crud_api import ChecksCrudApi
 from utils import create_ui_obj
 
 
-@hug.get('/api/data')
+def cors_support(response, *args, **kwargs):
+    response.set_header('Access-Control-Allow-Origin', '*')
+
+
+@hug.get('/api/data', requires=cors_support)
 def get_data():
     checks_list = db_extractor('Check')
     status_list = db_extractor('Status')
