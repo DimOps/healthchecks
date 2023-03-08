@@ -1,0 +1,26 @@
+.header {
+    background-color: #222;
+    height: 100px;
+    padding: 20px;
+    color: white;
+    font-size: x-large;
+    position: sticky;
+}
+
+button {
+    width: 180px;
+    border: solid;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 5px 20px;
+    background-color:#475c79;
+    text-decoration: none;
+    font-size:x-large;
+    color: antiquewhite;
+}
+
+button:hover {
+    background-color: #265724;
+    color: antiquewhite;
+    cursor: pointer;
+}
