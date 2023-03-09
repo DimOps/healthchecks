@@ -1,11 +1,17 @@
 Two Endpoints:
+
 http://localhost:8000/api/data - get request to collect data
-http://localhost:8000/api/summary -post request with response outage report in minutes
+
+http://localhost:8000/api/summary - post request with response outage report in minutes
 
 Operational steps:
+
 	1. Change JSON file
+	
 	2. Run update_db.py
+	
 	3. Run sync_data.py
+	
 Data will be coherent and present in db and Pingdom.
 
 To keep db up-to-date:
