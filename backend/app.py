@@ -23,7 +23,7 @@ def get_data():
     for t in tuple_cls:
         obj = create_ui_obj(t[0], t[1])
         db_data['checks'].append(obj)
-        return db_data
+    return db_data
 
 
 @hug.post('/api/summary')
