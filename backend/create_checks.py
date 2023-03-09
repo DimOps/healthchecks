@@ -36,14 +36,10 @@ def create_checks(data):
     for obj in transformed_data:
         to_create_ping = obj['obj']
         res = ChecksCrudApi().create_check(to_create_ping)
-        # include try-catch
-        if res.status_code == 200:
-            check_id = int(obj['id'])
-            ping_id = int(res['check']['id'])
-            session.add(Status(ping_id=ping_id, check_id=check_id))
-        else:
-            session.close()
-            raise Exception(f"Pingdom returned {res.status_code} code")
+        check_id = int(obj['id'])
+        ping_id = int(res['check']['id'])
+        session.add(Status(ping_id=ping_id, check_id=check_id))
 
     session.commit()
     session.close()
+

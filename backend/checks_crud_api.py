@@ -12,7 +12,10 @@ class ChecksCrudApi:
 
     def get_checks_list(self):
         r = requests.get(f'{self.url}/checks', headers=self.auth)
-        return r.json()
+        if r.status_code == 200:
+            return r.json()
+        else:
+            raise Exception('Pingdom cannot return list of checks.')
 
     def get_check_outage_summary(self, check_id, **kwargs):
         q_params = []
@@ -24,17 +27,22 @@ class ChecksCrudApi:
 
     def create_check(self, data):
         r = requests.post(f'{self.url}/checks', headers=self.auth, json=data)
-        return r.json()
-
-    def delete_check(self, check_id):
-        r = requests.delete(f'{self.url}/checks/{check_id}', headers=self.auth)
-        return r.json()
+        if r.status_code == 200:
+            name = r.json()['check']['name']
+            print(f'Successfully created {name} in Pingdom')
+            return r.json()
+        else:
+            raise Exception(f"Couldn't create instance, Pingdom returns {r.status_code} code")
 
     def delete_many_checks(self, list_ids):
         s = ','.join([str(el) for el in list_ids])
         data = {
-                "delcheckids": f"{s}"
-                }
+            "delcheckids": f"{s}"
+        }
 
         r = requests.delete(f'{self.url}/checks', headers=self.auth, json=data)
-        return r.json()
+        if r.status_code == 200:
+            msg = r.json()['message']
+            print(f'{msg}')
+        else:
+            raise Exception(f"Couldn't delete instances, Pingdom returns {r.status_code} code")

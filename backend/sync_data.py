@@ -8,6 +8,9 @@ engine = create_engine("sqlite:///healthchecks.db", echo=True)
 Session = sessionmaker(bind=engine)
 
 
+# the two functions can be run separately
+# if only deletion or addition of records
+# in the JSON file is guaranteed
 def sync_ping():
     """
     Synchronises records in Pingdom with the
@@ -27,8 +30,7 @@ def sync_ping():
     pings_state = ChecksCrudApi().get_checks_list()
     ps = set([pc['id'] for pc in pings_state['checks']])
 
-    to_delete = cs.difference(ps)
-
+    to_delete = ps.difference(cs)
     ChecksCrudApi().delete_many_checks(to_delete)
 
 
@@ -45,4 +47,9 @@ def sync_db():
     create_checks(checks_list)
 
 
-engine.dispose(close=True)
+# sync_ping deletes old pings in Pingdom
+sync_ping()
+# sync_db creates instances in "status" table
+# AFTER it creates pings in Pingdom
+sync_db()
+
