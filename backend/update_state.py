@@ -1,8 +1,8 @@
-from create_db_models import Status, Check
+from create_db_models import Status
 from checks_crud_api import ChecksCrudApi
-from sqlalchemy import create_engine, update, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import time
+
 
 engine = create_engine("sqlite:///healthchecks.db", echo=True)
 Session = sessionmaker(bind=engine)
