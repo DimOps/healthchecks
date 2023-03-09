@@ -39,8 +39,6 @@ def update_state():
      or c.ping_id != p['id']]
 
 
-start = time.time()
 update_state()
 session.close()
-end = time.time()
-print(end - start)
+

@@ -1,8 +1,13 @@
 {
 "check": [
 	{
-	"name":"sap",
-	"host":"www.sap.com",
+	"name":"amazon",
+	"host":"www.aws.com",
+	"type":"http"
+	},
+	{
+	"name":"google",
+	"host":"www.google.com",
 	"type":"http"
 	}
 	]

@@ -1,8 +1,10 @@
 import hug
-from extractor import db_extractor
 from checks_crud_api import ChecksCrudApi
 from utils import create_ui_obj
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+from create_db_models import Status, Check
 
 def cors_support(response, *args, **kwargs):
     response.set_header('Access-Control-Allow-Origin', '*')
@@ -10,16 +12,18 @@ def cors_support(response, *args, **kwargs):
 
 @hug.get('/api/data', requires=cors_support)
 def get_data():
-    checks_list = db_extractor('Check')
-    status_list = db_extractor('Status')
+    engine = create_engine("sqlite:///healthchecks.db", echo=True)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    tuple_cls = session.query(Check, Status).filter(Check.id == Status.check_id).all()
+    session.close()
+
     db_data = {"checks": []}
-    for check in checks_list:
-        for stat in status_list:
-            if check.id == stat.check_id:
-                obj = create_ui_obj(check, stat)
-                db_data['checks'].append(obj)
-                break
-    return db_data
+
+    for t in tuple_cls:
+        obj = create_ui_obj(t[0], t[1])
+        db_data['checks'].append(obj)
+        return db_data
 
 
 @hug.post('/api/summary')
