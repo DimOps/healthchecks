@@ -1,9 +1,12 @@
-from create_db_models import Status
-from extractor import db_extractor
+from create_db_models import Status, Check
 from create_checks import create_checks
 from checks_crud_api import ChecksCrudApi
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+engine = create_engine("sqlite:///healthchecks.db", echo=True)
+Session = sessionmaker(bind=engine)
+
 
 def sync_ping():
     """
@@ -14,11 +17,11 @@ def sync_ping():
         amendment and
         2. One-to-One deletes cascade in DB
     """
-    engine = create_engine("sqlite:///healthchecks.db", echo=True)
-    Session = sessionmaker(bind=engine)
+
     session = Session()
 
     status_state = session.query(Status.ping_id).all()
+    session.close()
     cs = set([int(str(p)[1:len(str(p)) - 2]) for p in status_state])
 
     pings_state = ChecksCrudApi().get_checks_list()
@@ -35,24 +38,11 @@ def sync_db():
     and Status table which is to be current
     Pingdom statistics in the database
     """
-    # Always execute sync_ping() before as
-    # it will duplicate old records(? break was bug, check)
-    checks_list = db_extractor('Check')
-    status_list = db_extractor('Status')
 
-    for check in checks_list:
-        for stat in status_list:
-            if check.id == stat.check_id:
+    session = Session()
+    checks_list = session.query(Check).filter_by(current_state=None).all()
+    session.close()
+    create_checks(checks_list)
 
-                status_list.remove(stat)
-                break
-        ch = {
-            "check_id": check.id,
-            "obj":
-                {
-                    "name": f"{check.name}",
-                    "host": f"{check.host}",
-                    "type": f"{check.type}"
-                }
-        }
-        create_checks(**ch)
+
+engine.dispose(close=True)

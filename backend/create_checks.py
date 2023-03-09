@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from create_db_models import Check, Status
+from create_db_models import Status
 from checks_crud_api import ChecksCrudApi
 
 engine = create_engine("sqlite:///healthchecks.db", echo=True)
@@ -9,16 +9,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def _to_create_checks():
-    checks_list = session.query(Check).all()
-    added_checks = session.query(Status).all()
-
-    for c_check in added_checks:
-        for check in checks_list:
-            if c_check.check_id == check.id:
-                checks_list.remove(check)
-                break
-
+def data_transformation(checks_list):
     return [{
          "id": f"{c.id}",
          "obj": {
@@ -29,24 +20,30 @@ def _to_create_checks():
             for c in checks_list]
 
 
-def create_checks(**kwargs):
-    if not kwargs:
-        data = _to_create_checks()
-    else:
-        res = ChecksCrudApi().create_check(kwargs['obj'])
-        session.add(Status(ping_id=res['check']['id'], check_id=kwargs['check_id']))
-        session.commit()
-        stat_record = session.query(Status).filter(Status.ping_id == res['check']['id']).first()
-        return stat_record
+def create_checks(data):
+    """
+    Called when JSON file updated, hence "checks" table expanded.
+    create_checks function follows the good practice
+    to first successfully create tangible object on
+    third party servers and then insert the record in DB.
 
-    for obj in data:
-        to_create = obj['obj']
-        res = ChecksCrudApi().create_check(to_create)
+    :param data: checks in "checks" DB table without 'checking'
+                connection with "status" table
+    """
+
+    transformed_data = data_transformation(data)
+
+    for obj in transformed_data:
+        to_create_ping = obj['obj']
+        res = ChecksCrudApi().create_check(to_create_ping)
         # include try-catch
-        check_id = int(obj['id'])
-        ping_id = int(res['check']['id'])
-        session.add(Status(ping_id=ping_id, check_id=check_id))
+        if res.status_code == 200:
+            check_id = int(obj['id'])
+            ping_id = int(res['check']['id'])
+            session.add(Status(ping_id=ping_id, check_id=check_id))
+        else:
+            session.close()
+            raise Exception(f"Pingdom returned {res.status_code} code")
+
     session.commit()
     session.close()
-    return True  # confirmation
-
