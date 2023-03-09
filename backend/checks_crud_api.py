@@ -31,7 +31,7 @@ class ChecksCrudApi:
         return r.json()
 
     def delete_many_checks(self, list_ids):
-        s = ','.join([str(i) for i in list_ids])
+        s = ','.join([str(el) for el in list_ids])
         data = {
                 "delcheckids": f"{s}"
                 }

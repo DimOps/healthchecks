@@ -1,7 +1,9 @@
+from create_db_models import Status
 from extractor import db_extractor
 from create_checks import create_checks
 from checks_crud_api import ChecksCrudApi
-
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 def sync_ping():
     """
@@ -12,21 +14,19 @@ def sync_ping():
         amendment and
         2. One-to-One deletes cascade in DB
     """
-    db_state = db_extractor('Status')
-    ping_checks = ChecksCrudApi().get_checks_list()
+    engine = create_engine("sqlite:///healthchecks.db", echo=True)
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
-    # assumes that only the script will interact with Pingdom APIs
-    if len(db_state) >= ping_checks['counts']['total']:
-        return 'Ping is synced'
-    else:
-        ping_instances = ping_checks['checks']
-        for stat in db_state:
-            for ping in ping_instances:
-                if stat.ping_id == ping['id']:
-                    ping_instances.remove(ping)
-                    break
+    status_state = session.query(Status.ping_id).all()
+    cs = set([int(str(p)[1:len(str(p)) - 2]) for p in status_state])
 
-        ChecksCrudApi().delete_many_checks([ping['id'] for ping in ping_instances])
+    pings_state = ChecksCrudApi().get_checks_list()
+    ps = set([pc['id'] for pc in pings_state['checks']])
+
+    to_delete = cs.difference(ps)
+
+    ChecksCrudApi().delete_many_checks(to_delete)
 
 
 def sync_db():
