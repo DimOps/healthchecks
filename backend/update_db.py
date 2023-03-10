@@ -8,7 +8,7 @@ with open("healthchecks.json", "r") as read_file:
 
 json_data = data['check']
 
-engine = create_engine("sqlite:///healthchecks.db", echo=True)
+engine = create_engine("sqlite:///healthchecks.db")
 Session = sessionmaker(bind=engine)
 session = Session()
 db_data = session.query(Check).all()

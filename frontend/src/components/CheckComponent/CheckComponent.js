@@ -26,15 +26,18 @@ const CheckComponent = (props) => {
 
 
                 <section className={styles.OutageInfo}>
-                        <button className={styles.Btn}>hours</button>
+                        <label>Last N hours:</label>
                         <form className={styles.OutageForm}>
-                            <input type="datetime-local" />
+                            <input type="number" />
                             <Link>
                                 <div className={styles.Btn}>
-                                    Update Outage
+                                    Outage
                                 </div>
                             </Link>
                         </form>
+                        <span><label>33%</label></span>
+                        <span><label>33%</label></span>
+                        <span><label>33%</label></span>
                 </section>
             </div>
         </div>);

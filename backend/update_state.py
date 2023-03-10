@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-engine = create_engine("sqlite:///healthchecks.db", echo=True)
+engine = create_engine("sqlite:///healthchecks.db")
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -25,7 +25,6 @@ def change_record(check, ping):
         for k, v in ping_dict_stats.items():
             if ping_dict_stats[k] != db_status_record[k]:
                 u = {f'{k}': ping_dict_stats[k]}
-                print(u)
                 session.query(Status).filter(Status.ping_id == ping['id']).update(u)
         session.commit()
 

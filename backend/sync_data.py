@@ -4,7 +4,7 @@ from checks_crud_api import ChecksCrudApi
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine("sqlite:///healthchecks.db", echo=True)
+engine = create_engine("sqlite:///healthchecks.db")
 Session = sessionmaker(bind=engine)
 
 
