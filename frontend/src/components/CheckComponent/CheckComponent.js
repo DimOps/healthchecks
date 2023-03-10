@@ -1,14 +1,22 @@
 import { useState } from "react";
 import styles from "./CheckComponent.module.css"
+
+import { FetchReport } from "../../utils";
+
+
 const CheckComponent = (props) => {
     const [hours, setHours] = useState(0)
 
-    const submitHandler = (e) => {
+    let outagePercentage = {'unknown': 100, 'up': null, 'down': null}
+
+    const submitHandler = async (e) => {
         e.preventDefault();
         const kwargs = {'from': 0, 'to': 0}
         const hoursBack = hours
         kwargs.to = Date.now()
         kwargs.from = Date.now() - Number(hoursBack)*60000
+        const res = await FetchReport(kwargs)
+        console.log(res)
     };
 
     const outageHandler = (e) => {
@@ -51,9 +59,9 @@ const CheckComponent = (props) => {
                                 <input className={styles.Btn} type="submit" value="Outage"/>
 
                         </form>
-                        <span><label>33%</label></span>
-                        <span><label>33%</label></span>
-                        <span><label>33%</label></span>
+                        <span className={styles.Outage}>Unknown<label>{outagePercentage.unknown}%</label></span>
+                        <span className={styles.Outage}>Up<label>{outagePercentage.up ? outagePercentage.up : 0}%</label></span>
+                        <span className={styles.Outage}>Down<label>{outagePercentage.down ? outagePercentage.down : 0}%</label></span>
                 </section>
             </div>
         </div>);

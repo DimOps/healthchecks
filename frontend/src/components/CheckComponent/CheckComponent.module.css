@@ -48,4 +48,14 @@
 
 .OutageForm {
     display: inline-block;
+    margin-left: 2px;
+}
+
+.Outage {
+    margin: 3px;
+    padding: 3px;
+}
+
+.Outage label {
+    margin-left: 3px;
 }
