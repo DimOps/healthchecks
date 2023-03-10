@@ -19,7 +19,8 @@ To keep db up-to-date:
 	( implementation is inclined to perform for a shorter period between syncs if displaying last-time-down and time-to-recover is important metric to follow over casual updates of state).
 	
 To configure token:
-	in .env file:
+	in /backend directory create .env file:
+	
 	TOKEN = {token}
 	
 Python version: 3.10.6

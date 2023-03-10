@@ -10,16 +10,16 @@ const CheckComponent = (props) => {
                 <section>
 
                     <header className={styles.CheckHeader}>
-                        <span>Name: MobileDe</span>
-                        <span>Last shut: before createdOn</span>
-                        <span>Last recovery: before createdOn</span>
+                        <span>Name: {props.name}</span>
+                        <span>Last shut: estimateStart</span>
+                        <span>Last recovery: recoveryEstimation</span>
                     </header>
                     <hr />
 
                     <p className={styles.CheckDetails}>
-                        <span>Host: www.mobile.de</span>
-                        <span>Type: http</span>
-                        <span>Status: unknown</span>
+                        <span>Host: {props.host}</span>
+                        <span>Type: {props.type}</span>
+                        <span>Status: {props.status}</span>
                     </p>
 
                 </section>

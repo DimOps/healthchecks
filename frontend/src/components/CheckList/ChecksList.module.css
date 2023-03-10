@@ -1,0 +1,16 @@
+.ListItem {
+    
+    margin: 20px 30px;
+    max-width: fit-content;
+    min-height: 20vh;
+    max-height: fit-content;
+    color: antiquewhite;
+    text-align: center;
+    display: inline-block;
+}
+
+.ListItem div{
+    display: inline-block;
+}
+
+

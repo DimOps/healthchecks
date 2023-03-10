@@ -26,7 +26,7 @@ def get_data():
     return db_data
 
 
-@hug.post('/api/summary')
+@hug.post('/api/summary', requires=cors_support)
 def outage_summary(ping_id, **kwargs):
     """
     Default report span is 7 days back in time.

@@ -10,7 +10,7 @@
 
 .Check {
     background-color: rgb(98, 153, 185);
-    max-width: 800px;
+    max-width: fit-content;
     margin: 10px;
     text-align: left;
     vertical-align: top;
