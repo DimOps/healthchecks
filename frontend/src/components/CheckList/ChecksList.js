@@ -41,7 +41,7 @@ const ChecksList = () => {
                     type={c.type}
                     status={c['state'].status}
                     lastShut={c['state'].lastDownStart}
-                    lastRecovery={c['state'].laastDownEnd}
+                    lastRecovery={c['state'].lastDownEnd}
                 />))}
 
         </section>

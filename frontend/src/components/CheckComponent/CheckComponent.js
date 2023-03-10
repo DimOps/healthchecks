@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./CheckComponent.module.css"
 
 import { FetchReport } from "../../utils";
+import moment from "moment";
 
 
 const CheckComponent = (props) => {
@@ -31,8 +32,8 @@ const CheckComponent = (props) => {
 
                     <header className={styles.CheckHeader}>
                         <span>Name: {props.name}</span>
-                        <span>Last shut: estimateStart</span>
-                        <span>Last recovery: recoveryEstimation</span>
+                        <span>Last shut: {props.lastShut ? moment(props.lastShut).format("MMMM Do YYYY, hh:mm") : 'unknown'}</span>
+                        <span>Last recovery: {props.lastRecovery? moment(props.lastRecovery).format("MMMM Do YYYY, hh:mm") : 'unknown'}</span>
                     </header>
                     <hr />
 
