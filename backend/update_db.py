@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from create_db_models import Check
@@ -14,12 +15,16 @@ session = Session()
 db_data = session.query(Check).all()
 
 # check if someone changes the name but not the host and type and just state it
-# raise error if someone is trying to pass one check twice or more
+
+stringified_checks = [f"{hc['name']} - {hc['host']} - {hc['type']}" for hc in json_data]
+residuals = [item for item, count in Counter(stringified_checks).items() if count > 1]
+if len(residuals) > 0:
+    res = '\n'.join(residuals)
+    raise Exception(f'Checks with the following "name - host - type" configuration are duplicated: {res}')
 
 json_checks_name = [c['name'] for c in json_data]
-
-if len(set(json_checks_name)) > len(json_checks_name):
-    eq_names = set(json_checks_name).difference(json_checks_name)
+eq_names = [item for item, count in Counter(json_checks_name).items() if count > 1]
+if len(eq_names) > 0:
     names_str = ', '.join([n for n in eq_names])
     raise Exception(f'Check/s have the following names duplicated: {names_str}')
 
