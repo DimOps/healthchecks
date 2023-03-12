@@ -12,9 +12,17 @@ engine = create_engine("sqlite:///healthchecks.db")
 Session = sessionmaker(bind=engine)
 session = Session()
 db_data = session.query(Check).all()
-# check if someone change the name but not the host and type and just state it
-# raise error if someone is trying to replicate name
+
+# check if someone changes the name but not the host and type and just state it
 # raise error if someone is trying to pass one check twice or more
+
+json_checks_name = [c['name'] for c in json_data]
+
+if len(set(json_checks_name)) > len(json_checks_name):
+    eq_names = set(json_checks_name).difference(json_checks_name)
+    names_str = ', '.join([n for n in eq_names])
+    raise Exception(f'Check/s have the following names duplicated: {names_str}')
+
 deletions = []
 for db_instance in db_data:
     eq = False
