@@ -1,4 +1,5 @@
 import hug
+from hug.middleware import CORSMiddleware
 from checks_crud_api import ChecksCrudApi
 from utils import create_ui_obj
 from sqlalchemy import create_engine
@@ -6,11 +7,12 @@ from sqlalchemy.orm import sessionmaker
 
 from create_db_models import Status, Check
 
-def cors_support(response, *args, **kwargs):
-    response.set_header('Access-Control-Allow-Origin', '*')
+
+api = hug.API(__name__)
+api.http.add_middleware(CORSMiddleware(api))
 
 
-@hug.get('/api/data', requires=cors_support)
+@hug.get('/api/data')
 def get_data():
     engine = create_engine("sqlite:///healthchecks.db", echo=True)
     Session = sessionmaker(bind=engine)
@@ -26,7 +28,7 @@ def get_data():
     return db_data
 
 
-@hug.post('/api/summary', requires=cors_support)
+@hug.post('/api/summary')
 def outage_summary(ping_id, **kwargs):
     """
     Default report span is 7 days back in time.
