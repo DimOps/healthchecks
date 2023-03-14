@@ -31,9 +31,8 @@ const CheckComponent = (props) => {
         e.preventDefault();
         const hoursBack = hours
         kwargs.timeto = Math.floor(Date.now() / 1000)
-        kwargs.timefrom = Math.floor((Date.now() - Number(hoursBack) * 60000) / 1000)
+        kwargs.timefrom = Math.floor((Date.now() - Number(hoursBack) * 3600000) / 1000)
         FetchReport(props.pingId, kwargs)
-        console.log(outage);
     };
 
     const outageHandler = (e) => {

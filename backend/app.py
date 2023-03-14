@@ -1,7 +1,7 @@
 import hug
 from hug.middleware import CORSMiddleware
 from checks_crud_api import ChecksCrudApi
-from utils import create_ui_obj
+from utils import create_ui_obj, outage_in_percentage
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -29,24 +29,44 @@ def get_data():
 
 
 @hug.post('/api/summary')
-def outage_summary(ping_id, **kwargs):
+def outage_summary(checkId, kwargs):
+    # put state changes stat in response
+    # put discrepancy/ies of asked and provided by Pingdom API status report in response, if any
     """
     Default report span is 7 days back in time.
-    :param ping_id: id from Pingdom which feeds into their APIs
+    :param checkId: id from Pingdom which feeds into their APIs
             kwargs: from - date in UNIX time format
                     to - date in UNIX time format
-    :return: time in MINUTES from the set time to now for each status type
+    :return: time in PERCENTAGE from the set time to now for each status type
     """
-    resp_summary = ChecksCrudApi().get_check_outage_summary(ping_id, **kwargs)
+    time_from = kwargs['timefrom']
+    time_to = kwargs['timeto']
+
+    resp_summary = ChecksCrudApi().get_check_outage_summary(check_id=checkId, **kwargs)
+    reports = resp_summary['summary']['states']
+
     report = {'unknown': 0, 'up': 0, 'down': 0}
+    for i in range(len(reports)):
+        if reports[i]['timefrom'] <= time_from <= reports[i]['timeto']:
+            if time_to <= reports[i]['timeto']:
+                report[reports[i]['status']] += time_to - time_from
+                break
+            else:
+                report[reports[i]['status']] += reports[i]['timeto'] - time_from
+                if i == len(reports) - 1:
+                    report['unknown'] = time_to - reports[i]['timeto']
+                else:
+                    continue
+        if time_from < reports[i]['timefrom'] and reports[i]['timeto'] < time_to:
+            report[reports[i]['status']] += reports[i]['timeto'] - reports[i]['timefrom']
+            if i == len(reports) - 1:
+                report['unknown'] = time_to - reports[i]['timeto']
+            else:
+                continue
+        if time_from < reports[i]['timefrom'] and time_to <= reports[i]['timeto']:
+            report[reports[i]['status']] += time_to - reports[i]['timefrom']
+            break
 
-    # extracts time in minutes to calculate percentage on the client
-    for stamp in resp_summary['summary']['states']:
-        if stamp['status'] == 'unknown':
-            report['unknown'] += (stamp['timeto'] - stamp['timefrom'])/60
-        elif stamp['status'] == 'up':
-            report['up'] += (stamp['timeto'] - stamp['timefrom']) / 60
-        elif stamp['status'] == 'down':
-            report['down'] += (stamp['timeto'] - stamp['timefrom'])/60
+    outage = outage_in_percentage(report)
 
-    return report
+    return outage
