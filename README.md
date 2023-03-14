@@ -2,7 +2,7 @@ Two Endpoints:
 
 http://localhost:8000/api/data - get request to collect data
 
-http://localhost:8000/api/summary - post request with response outage report in minutes
+http://localhost:8000/api/summary - post request which accepts Pingdom check ID with optional report interval. The response is the outage report in percentage.
 
 Operational steps:
 
@@ -24,3 +24,7 @@ To configure token:
 	TOKEN = {token}
 	
 Python version: 3.10.6
+
+UI notes:
+
+Initially outage report is loaded with 'unknown' state 100%. Reason being Pingdom APIs need time to update status to an actual one. Besides, report is requested directly from Pingdom APIs and provisioned on the backend which is a resourceful operation if one does not request it at a time.
